@@ -1,0 +1,11 @@
+*.user
+*.suo
+*.bak
+*.~*
+*.lnk
+*.design
+*.log
+*.licenseheader
+bin
+obj
+Build

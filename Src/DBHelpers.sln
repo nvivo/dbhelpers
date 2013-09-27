@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBHelpers", "DBHelpers\DBHelpers.csproj", "{DECB23E4-A87D-433F-9066-0428C2C6466E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBHelpers.Tests", "DBHelpers.Tests\DBHelpers.Tests.csproj", "{C3A369D0-68CD-4DDF-8607-8AAAB62EB39D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DECB23E4-A87D-433F-9066-0428C2C6466E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DECB23E4-A87D-433F-9066-0428C2C6466E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DECB23E4-A87D-433F-9066-0428C2C6466E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DECB23E4-A87D-433F-9066-0428C2C6466E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3A369D0-68CD-4DDF-8607-8AAAB62EB39D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3A369D0-68CD-4DDF-8607-8AAAB62EB39D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3A369D0-68CD-4DDF-8607-8AAAB62EB39D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3A369D0-68CD-4DDF-8607-8AAAB62EB39D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
