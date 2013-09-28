@@ -13,6 +13,15 @@ System Requirements
 
 DBHelpers is coded for .NET 4.0 and should work with any .NET Data Provider.
 
+Installation
+------------
+
+You can install DBHelpers from [Nuget](https://www.nuget.org/packages/DBHelpers/):
+
+```
+Install-Package DBHelpers
+```
+
 Usage
 -----
 
