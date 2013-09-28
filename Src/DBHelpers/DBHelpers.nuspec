@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>DBHelpers</id>
+    <version>0.9.0</version>
+	<title>DBHelpers - simple and powerful ADO.NET helpers</title>
+    <authors>Natan Vivo</authors>
+    <owners>Natan Vivo</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/nvivo/dbhelpers</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>DBHelpers is a simple but powerful library for working with plain ADO.NET.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2010-2013</copyright>
+    <tags>dbhelpers dbhelper ado.net database helper</tags>
+  </metadata>
+</package>
