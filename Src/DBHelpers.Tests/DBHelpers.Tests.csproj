@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseOverloadTests.cs" />
+    <Compile Include="DBConvertOverloadTests.cs" />
+    <Compile Include="DBConvertTests.cs" />
     <Compile Include="DbHelperExtensionsOverloadTests.cs" />
     <Compile Include="DataReaderConverterTests.cs" />
     <Compile Include="DbHelperOverloadTests.cs" />

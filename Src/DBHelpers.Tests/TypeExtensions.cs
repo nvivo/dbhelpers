@@ -6,11 +6,9 @@ namespace DBHelpers.Tests
 {
     public static class TypeExtensions
     {
-        public static string[] GetSignatures(this Type type, string methodName, bool staticMembers)
+        public static string[] GetSignatures(this Type type, string methodName, BindingFlags flags)
         {
-            var bindingFlags = BindingFlags.Public | (staticMembers ? BindingFlags.Static : BindingFlags.Instance);
-
-            var methods = type.GetMethods(bindingFlags).Where(m => m.Name == methodName);
+            var methods = type.GetMethods(flags).Where(m => m.Name == methodName);
 
             var signatures = methods.Select(m =>
             {
@@ -25,15 +23,6 @@ namespace DBHelpers.Tests
 
         public static string GetTypeName(Type type)
         {
-            if (type == typeof(int))
-                return "int";
-
-            if (type == typeof(object))
-                return "object";
-
-            if (type == typeof(string))
-                return "string";
-
             if (type.IsGenericType)
             {
                 var name = type.Name.Split('`')[0];

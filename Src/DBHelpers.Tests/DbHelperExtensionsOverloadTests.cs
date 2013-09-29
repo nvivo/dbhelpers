@@ -1,102 +1,70 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace DBHelpers.Tests
 {
     [TestFixture]
-    public class DbHelperExtensionsOverloadTests
+    public class DbHelperExtensionsOverloadTests : BaseOverloadTests
     {
-        private string[] RequiredSignatures = {
-            "int ExecuteNonQuery(DBHelper, string)",
-
-            "T ExecuteScalar(DBHelper, string)",
-            "T ExecuteScalar(DBHelper, string, Converter<object, T>)",
-
-            "DbDataReader ExecuteReader(DBHelper, string)",
-
-            "DataTable ExecuteDataTable(DBHelper, string)",
-            "DataTable ExecuteDataTable(DBHelper, string, int, int)",
-
-            "DataSet ExecuteDataSet(DBHelper, string)",
-
-            "T[] ExecuteArray(DBHelper, string)",
-            "T[] ExecuteArray(DBHelper, string, int, int)",
-
-            "T[] ExecuteArray(DBHelper, string, Converter<object, T>)",
-            "T[] ExecuteArray(DBHelper, string, Converter<object, T>, int, int)",
-
-            "Dictionary<TKey, TValue> ExecuteDictionary(DBHelper, string)",
-            "Dictionary<TKey, TValue> ExecuteDictionary(DBHelper, string, int, int)",
-
-            "Dictionary<TKey, TValue> ExecuteDictionary(DBHelper, string, Converter<object, TKey>, Converter<object, TValue>)",
-            "Dictionary<TKey, TValue> ExecuteDictionary(DBHelper, string, Converter<object, TKey>, Converter<object, TValue>, int, int)",
-
-            "T ExecuteObject(DBHelper, string)",
-            "T ExecuteObject(DBHelper, string, Converter<DbDataReader, T>)",
-
-            "List<T> ExecuteList(DBHelper, string)",
-            "List<T> ExecuteList(DBHelper, string, int, int)",
-
-            "List<T> ExecuteList(DBHelper, string, Converter<DbDataReader, T>)",
-            "List<T> ExecuteList(DBHelper, string, Converter<DbDataReader, T>, int, int)"
-        };
-
-        private string[] MethodNames = {
-            "ExecuteNonQuery",
-            "ExecuteScalar",
-            "ExecuteReader",
-            "ExecuteDataTable",
-            "ExecuteDataSet",
-            "ExecuteArray",
-            "ExecuteDictionary",
-            "ExecuteObject",
-            "ExecuteList"
-        };
-
-        [TestCaseSource("SignatureExistTestSource")]
-        public void SignatureExists(string signature, string[] existing)
+        protected override IEnumerable<string> GetRequiredStaticSignatures()
         {
-            var exists = existing.Contains(signature);
-            Assert.That(exists, "Not Found: " + signature);
+            return new string[] {
+                "Int32 ExecuteNonQuery(DBHelper, String)",
+
+                "T ExecuteScalar(DBHelper, String)",
+                "T ExecuteScalar(DBHelper, String, Converter<Object, T>)",
+
+                "DbDataReader ExecuteReader(DBHelper, String)",
+
+                "DataTable ExecuteDataTable(DBHelper, String)",
+                "DataTable ExecuteDataTable(DBHelper, String, Int32, Int32)",
+
+                "DataSet ExecuteDataSet(DBHelper, String)",
+
+                "T[] ExecuteArray(DBHelper, String)",
+                "T[] ExecuteArray(DBHelper, String, Int32, Int32)",
+
+                "T[] ExecuteArray(DBHelper, String, Converter<Object, T>)",
+                "T[] ExecuteArray(DBHelper, String, Converter<Object, T>, Int32, Int32)",
+
+                "Dictionary<TKey, TValue> ExecuteDictionary(DBHelper, String)",
+                "Dictionary<TKey, TValue> ExecuteDictionary(DBHelper, String, Int32, Int32)",
+
+                "Dictionary<TKey, TValue> ExecuteDictionary(DBHelper, String, Converter<Object, TKey>, Converter<Object, TValue>)",
+                "Dictionary<TKey, TValue> ExecuteDictionary(DBHelper, String, Converter<Object, TKey>, Converter<Object, TValue>, Int32, Int32)",
+
+                "T ExecuteObject(DBHelper, String)",
+                "T ExecuteObject(DBHelper, String, Converter<DbDataReader, T>)",
+
+                "List<T> ExecuteList(DBHelper, String)",
+                "List<T> ExecuteList(DBHelper, String, Int32, Int32)",
+
+                "List<T> ExecuteList(DBHelper, String, Converter<DbDataReader, T>)",
+                "List<T> ExecuteList(DBHelper, String, Converter<DbDataReader, T>, Int32, Int32)"
+            };
         }
 
-        public IEnumerable<TestCaseData> SignatureExistTestSource()
+        protected override IEnumerable<string> GetExistingStaticSignatures()
         {
-            var existing = new List<string>();
+            string[] methods = {
+                "ExecuteNonQuery",
+                "ExecuteScalar",
+                "ExecuteReader",
+                "ExecuteDataTable",
+                "ExecuteDataSet",
+                "ExecuteArray",
+                "ExecuteDictionary",
+                "ExecuteObject",
+                "ExecuteList"
+            };
 
-            foreach (var methodName in MethodNames)
-                existing.AddRange(typeof(DBHelperExtensions).GetSignatures(methodName, true));
+            var type = typeof(DBHelperExtensions);
 
-            foreach (var signature in RequiredSignatures)
-            {
-                var testCase = new TestCaseData(signature, existing.ToArray());
-                testCase.SetName(signature);
-
-                yield return testCase;
-            }
-        }
-
-        [TestCaseSource("SignaturesNotInRequiredListTestSource")]
-        public void SignaturesNotInRequiredList(bool state)
-        {
-            Assert.That(state);
-        }
-
-        public IEnumerable<TestCaseData> SignaturesNotInRequiredListTestSource()
-        {
-            var existing = new List<string>();
-
-            foreach (var methodName in MethodNames)
-                existing.AddRange(typeof(DBHelperExtensions).GetSignatures(methodName, true));
-
-            var notRequired = existing.Except(RequiredSignatures);
-
-            foreach (var signature in notRequired)
-                yield return new TestCaseData(false).SetName(signature);
-
-            if (notRequired.Count() == 0)
-                yield return new TestCaseData(true).SetName("All Signatures OK");
+            foreach (var method in methods)
+                foreach (var signature in type.GetSignatures(method, BindingFlags.Public | BindingFlags.Static))
+                    yield return signature;
         }
     }
 }
