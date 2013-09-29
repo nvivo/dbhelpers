@@ -42,7 +42,7 @@ namespace DBHelpers
             {
                 var prop = mapping.Property;
                 var rawValue = reader.GetValue(mapping.Index);
-                var value = System.Convert.ChangeType(rawValue, prop.PropertyType);
+                var value = DBConvert.To(prop.PropertyType, rawValue);
                 prop.SetValue(o, value, null);
             }
 

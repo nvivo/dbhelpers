@@ -78,17 +78,6 @@ namespace DBHelpers
 
         #region Private Helpers
 
-        protected virtual Converter<object, T> GetTypeConverter<T>()
-        {
-            return (object o) => (T) Convert.ChangeType(o, typeof(T));
-        }
-
-        protected virtual Converter<DbDataReader, T> GetDataReaderConverter<T>()
-            where T: new()
-        {
-            return new DataReaderConverter<T>().Convert;
-        }
-
         protected static void FillFromReader(DbDataReader reader, int startRecord, int maxRecords, Action<DbDataReader> action)
         {
             if (startRecord < 0)
@@ -203,6 +192,17 @@ namespace DBHelpers
                 _parameterFormat = GetProviderParameterFormatString();
 
             return String.Format(_parameterFormat, index);
+        }
+
+        protected virtual Converter<object, T> GetTypeConverter<T>()
+        {
+            return (object o) => (T)DBConvert.To<T>(o);
+        }
+
+        protected virtual Converter<DbDataReader, T> GetDataReaderConverter<T>()
+            where T : new()
+        {
+            return new DataReaderConverter<T>().Convert;
         }
 
         protected virtual void OnExecuteCommand(DbCommand command)
