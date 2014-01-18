@@ -101,7 +101,7 @@ namespace DBHelpers
 
             if (hasMoreRecords)
             {
-                if (maxRecords >= 0)
+                if (maxRecords > 0)
                 {
                     int i = 0;
 
@@ -357,12 +357,12 @@ namespace DBHelpers
 
         public DataTable ExecuteDataTable(DbCommand command, DbConnection connection)
         {
-            return ExecuteDataTable(command, 0, -1, connection);
+            return ExecuteDataTable(command, 0, 0, connection);
         }
 
         public DataTable ExecuteDataTable(DbCommand command)
         {
-            return ExecuteDataTable(command, 0, -1);
+            return ExecuteDataTable(command, 0, 0);
         }
 
         public DataTable ExecuteDataTable(string commandText, int startRecord, int maxRecords)
@@ -459,12 +459,12 @@ namespace DBHelpers
 
         public T[] ExecuteArray<T>(DbCommand command, Converter<object, T> converter, DbConnection connection)
         {
-            return ExecuteArray<T>(command, converter, 0, -1, connection);
+            return ExecuteArray<T>(command, converter, 0, 0, connection);
         }
 
         public T[] ExecuteArray<T>(DbCommand command, Converter<object, T> converter)
         {
-            return ExecuteArray<T>(command, converter, 0, -1);
+            return ExecuteArray<T>(command, converter, 0, 0);
         }
 
         public T[] ExecuteArray<T>(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
@@ -553,12 +553,12 @@ namespace DBHelpers
 
         public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, DbConnection connection)
         {
-            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, 0, -1, connection);
+            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, 0, 0, connection);
         }
 
         public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter)
         {
-            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, 0, -1);
+            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, 0, 0);
         }
 
         public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
@@ -708,12 +708,12 @@ namespace DBHelpers
 
         public List<T> ExecuteList<T>(DbCommand command, Converter<DbDataReader, T> converter, DbConnection connection)
         {
-            return ExecuteList<T>(command, converter, 0, -1, connection);
+            return ExecuteList<T>(command, converter, 0, 0, connection);
         }
 
         public List<T> ExecuteList<T>(DbCommand command, Converter<DbDataReader, T> converter)
         {
-            return ExecuteList<T>(command, converter, 0, -1);
+            return ExecuteList<T>(command, converter, 0, 0);
         }
 
         public List<T> ExecuteList<T>(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
