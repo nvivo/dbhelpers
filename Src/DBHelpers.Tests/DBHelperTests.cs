@@ -186,7 +186,8 @@ namespace DBHelpers.Tests
         {
             var dataSets = new[]
             {
-                new [] {0, 0, 0, 0},
+                // startRecord, maxRecords, expectedCount, firstValue
+                new [] {0, 0, 50, 0},
                 new [] {0, -1, 50, 0},
                 new [] {51, 10, 0, 0},
                 new [] {0, 100, 50, 0},

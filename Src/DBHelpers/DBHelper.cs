@@ -83,39 +83,28 @@ namespace DBHelpers
             if (startRecord < 0)
                 throw new ArgumentOutOfRangeException("startRecord", "StartRecord must be zero or higher.");
 
-            if (maxRecords == 0)
-                return;
-
-            bool hasMoreRecords = true;
-
             while (startRecord > 0)
             {
                 if (!reader.Read())
-                {
-                    hasMoreRecords = false;
-                    break;
-                }
+                    return;
 
                 startRecord--;
             }
 
-            if (hasMoreRecords)
+            if (maxRecords > 0)
             {
-                if (maxRecords > 0)
-                {
-                    int i = 0;
+                int i = 0;
 
-                    while (i < maxRecords && reader.Read())
-                    {
-                        action(reader);
-                        i++;
-                    }
-                }
-                else
+                while (i < maxRecords && reader.Read())
                 {
-                    while (reader.Read())
-                        action(reader);
+                    action(reader);
+                    i++;
                 }
+            }
+            else
+            {
+                while (reader.Read())
+                    action(reader);
             }
         }
 
