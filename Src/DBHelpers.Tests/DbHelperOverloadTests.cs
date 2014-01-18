@@ -65,7 +65,40 @@ namespace DBHelpers.Tests
                 "List<T> ExecuteList(DbCommand, Converter<DbDataReader, T>)",
                 "List<T> ExecuteList(DbCommand, Converter<DbDataReader, T>, DbConnection)",
                 "List<T> ExecuteList(DbCommand, Converter<DbDataReader, T>, Int32, Int32)",
-                "List<T> ExecuteList(DbCommand, Converter<DbDataReader, T>, Int32, Int32, DbConnection)"
+                "List<T> ExecuteList(DbCommand, Converter<DbDataReader, T>, Int32, Int32, DbConnection)",
+                
+                "Int32 ExecuteNonQuery(String)",
+
+                "T ExecuteScalar(String)",
+                "T ExecuteScalar(String, Converter<Object, T>)",
+
+                "DbDataReader ExecuteReader(String)",
+
+                "DataTable ExecuteDataTable(String)",
+                "DataTable ExecuteDataTable(String, Int32, Int32)",
+
+                "DataSet ExecuteDataSet(String)",
+
+                "T[] ExecuteArray(String)",
+                "T[] ExecuteArray(String, Int32, Int32)",
+
+                "T[] ExecuteArray(String, Converter<Object, T>)",
+                "T[] ExecuteArray(String, Converter<Object, T>, Int32, Int32)",
+
+                "Dictionary<TKey, TValue> ExecuteDictionary(String)",
+                "Dictionary<TKey, TValue> ExecuteDictionary(String, Int32, Int32)",
+
+                "Dictionary<TKey, TValue> ExecuteDictionary(String, Converter<Object, TKey>, Converter<Object, TValue>)",
+                "Dictionary<TKey, TValue> ExecuteDictionary(String, Converter<Object, TKey>, Converter<Object, TValue>, Int32, Int32)",
+
+                "T ExecuteObject(String)",
+                "T ExecuteObject(String, Converter<DbDataReader, T>)",
+
+                "List<T> ExecuteList(String)",
+                "List<T> ExecuteList(String, Int32, Int32)",
+
+                "List<T> ExecuteList(String, Converter<DbDataReader, T>)",
+                "List<T> ExecuteList(String, Converter<DbDataReader, T>, Int32, Int32)",
             };
         }
 
