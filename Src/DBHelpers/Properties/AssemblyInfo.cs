@@ -1,5 +1,5 @@
 ﻿#region License
-//  Copyright 2010-2013 Natan Vivo - http://github.com/nvivo/dbhelpers
+//  Copyright 2010-2014 Natan Vivo - http://github.com/nvivo/dbhelpers
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("DBHelpers")]
 [assembly: AssemblyDescription("DBHelpers")]
 [assembly: AssemblyProduct("DBHelpers")]
-[assembly: AssemblyCopyright("Copyright © Natan Vivo 2010-2013")]
+[assembly: AssemblyCopyright("Copyright © Natan Vivo 2010-2014")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
