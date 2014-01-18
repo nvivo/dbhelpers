@@ -144,7 +144,7 @@ namespace DBHelpers
         public DbCommand CreateCommand(string commandText, params object[] parameters)
         {
             var len = parameters.Length;
-            
+
             var command = Factory.CreateCommand();
             command.CommandType = CommandType.Text;
 
@@ -156,7 +156,7 @@ namespace DBHelpers
                 {
                     var parameter = parameters[i];
                     var rawValue = parameter as RawValue;
-                    
+
                     if (rawValue != null)
                     {
                         formatValues[i] = rawValue.Value;
@@ -234,6 +234,12 @@ namespace DBHelpers
             return affectedRows;
         }
 
+        public int ExecuteNonQuery(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteNonQuery(command);
+        }
+
         #endregion
 
         #region ExecuteScalar<T>
@@ -271,6 +277,18 @@ namespace DBHelpers
             return ExecuteScalar<T>(command, GetTypeConverter<T>());
         }
 
+        public T ExecuteScalar<T>(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteScalar<T>(command);
+        }
+
+        public T ExecuteScalar<T>(string commandText, Converter<object, T> converter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteScalar<T>(command, converter);
+        }
+
         #endregion
 
         #region ExecuteReader
@@ -290,6 +308,12 @@ namespace DBHelpers
             connection.Open();
 
             return ExecuteReader(command, connection);
+        }
+
+        public DbDataReader ExecuteReader(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteReader(command);
         }
 
         #endregion
@@ -335,10 +359,22 @@ namespace DBHelpers
         {
             return ExecuteDataTable(command, 0, -1, connection);
         }
-        
+
         public DataTable ExecuteDataTable(DbCommand command)
         {
             return ExecuteDataTable(command, 0, -1);
+        }
+
+        public DataTable ExecuteDataTable(string commandText, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDataTable(command, startRecord, maxRecords);
+        }
+
+        public DataTable ExecuteDataTable(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDataTable(command);
         }
 
         #endregion
@@ -376,6 +412,12 @@ namespace DBHelpers
             return ds;
         }
 
+        public DataSet ExecuteDataSet(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDataSet(command);
+        }
+
         #endregion
 
         #region ExecuteArray<T>
@@ -389,7 +431,7 @@ namespace DBHelpers
                 FillFromReader(reader, startRecord, maxRecords, r =>
                 {
                     list.Add(
-                        converter(r.GetValue(0))
+                    converter(r.GetValue(0))
                     );
                 });
 
@@ -444,7 +486,31 @@ namespace DBHelpers
         {
             return ExecuteArray<T>(command, GetTypeConverter<T>());
         }
-        
+
+        public T[] ExecuteArray<T>(string commandText, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteArray<T>(command, startRecord, maxRecords);
+        }
+
+        public T[] ExecuteArray<T>(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteArray<T>(command);
+        }
+
+        public T[] ExecuteArray<T>(string commandText, Converter<object, T> converter, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteArray<T>(command, converter, startRecord, maxRecords);
+        }
+
+        public T[] ExecuteArray<T>(string commandText, Converter<object, T> converter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteArray<T>(command, converter);
+        }
+
         #endregion
 
         #region ExecuteDictionary<TKey, TValue>
@@ -458,8 +524,8 @@ namespace DBHelpers
                 FillFromReader(reader, startRecord, maxRecords, r =>
                 {
                     dict.Add(
-                        keyConverter(r.GetValue(0)),
-                        valueConverter(r.GetValue(1))
+                    keyConverter(r.GetValue(0)),
+                    valueConverter(r.GetValue(1))
                     );
                 });
 
@@ -515,6 +581,30 @@ namespace DBHelpers
             return ExecuteDictionary<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>());
         }
 
+        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(string commandText, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, startRecord, maxRecords);
+        }
+
+        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(string commandText, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter);
+        }
+
+        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(string commandText, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDictionary<TKey, TValue>(command, startRecord, maxRecords);
+        }
+
+        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDictionary<TKey, TValue>(command);
+        }
+
         #endregion
 
         #region ExecuteObject<T>
@@ -535,7 +625,7 @@ namespace DBHelpers
 
             return o;
         }
-        
+
         public T ExecuteObject<T>(DbCommand command, Converter<DbDataReader, T> converter)
         {
             T o;
@@ -553,7 +643,7 @@ namespace DBHelpers
         }
 
         public T ExecuteObject<T>(DbCommand command, DbConnection connection)
-            where T: new()
+            where T : new()
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteObject<T>(command, converter, connection);
@@ -564,6 +654,19 @@ namespace DBHelpers
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteObject<T>(command, converter);
+        }
+
+        public T ExecuteObject<T>(string commandText, Converter<DbDataReader, T> converter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteObject<T>(command, converter);
+        }
+
+        public T ExecuteObject<T>(string commandText)
+            where T : new()
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteObject<T>(command);
         }
 
         #endregion
@@ -607,7 +710,7 @@ namespace DBHelpers
         {
             return ExecuteList<T>(command, converter, 0, -1, connection);
         }
-        
+
         public List<T> ExecuteList<T>(DbCommand command, Converter<DbDataReader, T> converter)
         {
             return ExecuteList<T>(command, converter, 0, -1);
@@ -628,7 +731,7 @@ namespace DBHelpers
         }
 
         public List<T> ExecuteList<T>(DbCommand command, DbConnection connection)
-            where T:new()
+            where T : new()
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteList<T>(command, converter, connection);
@@ -639,6 +742,32 @@ namespace DBHelpers
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteList<T>(command, converter);
+        }
+
+        public List<T> ExecuteList<T>(string commandText, Converter<DbDataReader, T> converter, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteList<T>(command, converter, startRecord, maxRecords);
+        }
+
+        public List<T> ExecuteList<T>(string commandText, Converter<DbDataReader, T> converter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteList<T>(command, converter);
+        }
+
+        public List<T> ExecuteList<T>(string commandText, int startRecord, int maxRecords)
+            where T : new()
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteList<T>(command, startRecord, maxRecords);
+        }
+
+        public List<T> ExecuteList<T>(string commandText)
+            where T : new()
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteList<T>(command);
         }
 
         #endregion

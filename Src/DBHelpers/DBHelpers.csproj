@@ -41,7 +41,6 @@
   <ItemGroup>
     <Compile Include="DBConvert.cs" />
     <Compile Include="DBHelper.cs" />
-    <Compile Include="DBHelperExtensions.cs" />
     <Compile Include="DataReaderConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawValue.cs" />
