@@ -79,6 +79,54 @@ namespace DBHelpers.Tests
             Assert.AreEqual(reference, guid);
         }
 
+        [Test]
+        public void Convert_DBNullToNullable_ReturnsNull()
+        {
+            var value = DBNull.Value;
+
+            Assert.IsNull(DBConvert.ToNullableSByte(value), "ToNullableSByte");
+            Assert.IsNull(DBConvert.ToNullableInt16(value), "ToNullableInt16");
+            Assert.IsNull(DBConvert.ToNullableInt32(value), "ToNullableInt32");
+            Assert.IsNull(DBConvert.ToNullableInt64(value), "ToNullableInt64");
+
+            Assert.IsNull(DBConvert.ToNullableByte(value), "ToNullableByte");
+            Assert.IsNull(DBConvert.ToNullableUInt16(value), "ToNullableUInt16");
+            Assert.IsNull(DBConvert.ToNullableUInt32(value), "ToNullableUInt32");
+            Assert.IsNull(DBConvert.ToNullableUInt64(value), "ToNullableUInt64");
+
+            Assert.IsNull(DBConvert.ToNullableSingle(value), "ToNullableSingle");
+            Assert.IsNull(DBConvert.ToNullableDouble(value), "ToNullableDouble");
+            Assert.IsNull(DBConvert.ToNullableDecimal(value), "ToNullableDecimal");
+            Assert.IsNull(DBConvert.ToNullableGuid(value), "ToNullableGuid");
+
+            Assert.IsNull(DBConvert.ToNullableBoolean(value), "ToNullableBoolean");
+            Assert.IsNull(DBConvert.ToNullableChar(value), "ToNullableChar");
+        }
+
+        [Test]
+        public void Convert_NullToNullable_ReturnsNull()
+        {
+            var value = (object) null;
+
+            Assert.IsNull(DBConvert.ToNullableSByte(value), "ToNullableSByte");
+            Assert.IsNull(DBConvert.ToNullableInt16(value), "ToNullableInt16");
+            Assert.IsNull(DBConvert.ToNullableInt32(value), "ToNullableInt32");
+            Assert.IsNull(DBConvert.ToNullableInt64(value), "ToNullableInt64");
+
+            Assert.IsNull(DBConvert.ToNullableByte(value), "ToNullableByte");
+            Assert.IsNull(DBConvert.ToNullableUInt16(value), "ToNullableUInt16");
+            Assert.IsNull(DBConvert.ToNullableUInt32(value), "ToNullableUInt32");
+            Assert.IsNull(DBConvert.ToNullableUInt64(value), "ToNullableUInt64");
+
+            Assert.IsNull(DBConvert.ToNullableSingle(value), "ToNullableSingle");
+            Assert.IsNull(DBConvert.ToNullableDouble(value), "ToNullableDouble");
+            Assert.IsNull(DBConvert.ToNullableDecimal(value), "ToNullableDecimal");
+            Assert.IsNull(DBConvert.ToNullableGuid(value), "ToNullableGuid");
+
+            Assert.IsNull(DBConvert.ToNullableBoolean(value), "ToNullableBoolean");
+            Assert.IsNull(DBConvert.ToNullableChar(value), "ToNullableChar");
+        }
+
         [TestCase(true)]
         [TestCase("true")]
         [TestCase("TRUE")]

@@ -619,7 +619,7 @@ namespace DBHelpers
                 return (T)value;
 
             if (value == null || value == DBNull.Value)
-                return default(T);
+                return null;
 
             return converter(value, provider);
         }
