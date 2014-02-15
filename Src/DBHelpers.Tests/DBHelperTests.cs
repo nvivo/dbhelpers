@@ -48,6 +48,16 @@ namespace DBHelpers.Tests
         }
 
         [Test]
+        public void CreateCommand_NullValuesSentAsDBNull()
+        {
+            var db = NewSqlHelper();
+
+            var command = db.CreateCommand("text {0}", new string[] { null });
+
+            Assert.AreEqual(DBNull.Value, command.Parameters[0].Value);
+        }
+
+        [Test]
         public void CreateParameterName()
         {
             var param = DB.CreateParameterName_(123);

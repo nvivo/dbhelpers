@@ -156,7 +156,7 @@ namespace DBHelpers
                         var name = CreateParameterName(i);
 
                         dbParameter.ParameterName = name;
-                        dbParameter.Value = parameter;
+                        dbParameter.Value = parameter ?? DBNull.Value;
 
                         formatValues[i] = name;
                         command.Parameters.Add(dbParameter);
