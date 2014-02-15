@@ -129,7 +129,7 @@ var user = db.ExecuteObject<User>("select * from users", reader => {
 
 There is also a built-in paging mechanism that works with any database for all methods that return collections. If for some reason you are not using LINQ or you cannot optimize your query for specific database, this is a good compromise.
 
-```  
+```cs
 var topUsers = db.ExecuteList<User>("select * from users", 0, 10);
 var page = db.ExecuteDataTable("select * from users", 20, 10);
 var arr = db.ExecuteArray("select id from top_visitors", 0, 100);
