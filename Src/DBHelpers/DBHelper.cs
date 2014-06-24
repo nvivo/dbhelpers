@@ -288,15 +288,18 @@ namespace DBHelpers
 
             OnExecuteCommand(command);
 
-            return command.ExecuteReader(CommandBehavior.CloseConnection);
+            return command.ExecuteReader();
         }
 
         public DbDataReader ExecuteReader(DbCommand command)
         {
             DbConnection connection = CreateConnection();
+            command.Connection = connection;
+
+            OnExecuteCommand(command);
             connection.Open();
 
-            return ExecuteReader(command, connection);
+            return command.ExecuteReader(CommandBehavior.CloseConnection);
         }
 
         public DbDataReader ExecuteReader(string commandText)

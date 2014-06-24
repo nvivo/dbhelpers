@@ -139,15 +139,26 @@ namespace DBHelpers.Tests
         }
 
         [Test]
-        public void ExecuteReader()
+        public void ExecuteReader_WithoutConnectionParameter_ShouldCloseConnection()
         {
-            var mockConnection = new Mock<DbConnection>();
             var mockCommand = new Mock<DbCommand>();
 
             mockCommand.SetupSet(c => c.Connection = It.IsAny<DbConnection>());
             mockCommand.Protected().Setup("ExecuteDbDataReader", CommandBehavior.CloseConnection);
 
-            var reader = DB.ExecuteReader(mockCommand.Object, mockConnection.Object);
+            var reader = DB.ExecuteReader(mockCommand.Object);
+
+            mockCommand.VerifyAll();
+        }
+
+        [Test]
+        public void ExecuteReader_WithConnectionParameter_ShouldNotCloseConnection()
+        {
+            var mockCommand = new Mock<DbCommand>();
+            var mockConnection = new Mock<DbConnection>();
+
+            mockCommand.Protected().Setup("ExecuteDbDataReader", ItExpr.Is<CommandBehavior>(v => v != CommandBehavior.CloseConnection));
+            DB.ExecuteReader(mockCommand.Object, mockConnection.Object);
 
             mockCommand.VerifyAll();
         }
