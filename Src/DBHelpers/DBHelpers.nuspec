@@ -3,15 +3,15 @@
   <metadata>
     <id>DBHelpers</id>
     <version>$version$</version>
-	<title>DBHelpers - simple and powerful ADO.NET helpers</title>
+	<title>DBHelpers</title>
     <authors>Natan Vivo</authors>
     <owners>Natan Vivo</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/nvivo/dbhelpers</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>DBHelpers is a simple but powerful library for working with plain ADO.NET.</description>
+    <description>DBHelpers is a simple but powerful helper library for working with plain ADO.NET.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2010-2013</copyright>
+    <copyright>Copyright 2010-2014</copyright>
     <tags>dbhelpers dbhelper ado.net database helper</tags>
   </metadata>
 </package>
