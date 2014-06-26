@@ -448,7 +448,7 @@ namespace DBHelpers
 
         #region String
 
-        public static string ToStringInternal(object value, IFormatProvider provider)
+        private static string ToStringInternal(object value, IFormatProvider provider)
         {
             return Convert.ToString(value, provider);
         }
