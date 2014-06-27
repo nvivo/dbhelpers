@@ -1,7 +1,9 @@
 ﻿using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace DBHelpers.Tests
 {
@@ -10,7 +12,7 @@ namespace DBHelpers.Tests
     {
         protected override IEnumerable<string> GetRequiredInstanceSignatures()
         {
-            return new string[] {
+            var sigs = new string[] {
                 "Int32 ExecuteNonQuery(DbCommand)",
                 "Int32 ExecuteNonQuery(DbCommand, DbConnection)",
 
@@ -100,6 +102,19 @@ namespace DBHelpers.Tests
                 "List<T> ExecuteList(String, Converter<DbDataReader, T>)",
                 "List<T> ExecuteList(String, Converter<DbDataReader, T>, Int32, Int32)",
             };
+
+            // hack to create an async version of all overloads above
+
+            var asyncSigs = new List<string>();
+            var matcher = new Regex(@"(.+) (.+)\((.+)\)");
+
+            foreach (var sig in sigs)
+            {
+                var asyncSig = matcher.Replace(sig, m => String.Format("Task<{0}> {1}Async({2})", m.Groups[1].Value, m.Groups[2].Value, m.Groups[3].Value));
+                asyncSigs.Add(asyncSig);
+            }
+
+            return sigs.Concat(asyncSigs);
         }
 
         protected override IEnumerable<string> GetExistingInstanceSignatures()
@@ -119,8 +134,13 @@ namespace DBHelpers.Tests
             var type = typeof(DBHelper);
 
             foreach (var method in methods)
+            {
                 foreach (var signature in type.GetSignatures(method, BindingFlags.Public | BindingFlags.Instance))
                     yield return signature;
+
+                foreach (var signature in type.GetSignatures(method + "Async", BindingFlags.Public | BindingFlags.Instance))
+                    yield return signature;
+            }
         }
     }
 }

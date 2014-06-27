@@ -21,6 +21,7 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace DBHelpers
 {
@@ -104,6 +105,36 @@ namespace DBHelpers
             else
             {
                 while (reader.Read())
+                    action(reader);
+            }
+        }
+
+        protected static async Task FillFromReaderAsync(DbDataReader reader, int startRecord, int maxRecords, Action<DbDataReader> action)
+        {
+            if (startRecord < 0)
+                throw new ArgumentOutOfRangeException("startRecord", "StartRecord must be zero or higher.");
+
+            while (startRecord > 0)
+            {
+                if (!await reader.ReadAsync())
+                    return;
+
+                startRecord--;
+            }
+
+            if (maxRecords > 0)
+            {
+                int i = 0;
+
+                while (i < maxRecords && await reader.ReadAsync())
+                {
+                    action(reader);
+                    i++;
+                }
+            }
+            else
+            {
+                while (await reader.ReadAsync())
                     action(reader);
             }
         }
@@ -231,6 +262,38 @@ namespace DBHelpers
 
         #endregion
 
+        #region ExecuteNonQueryAsync
+
+        public Task<int> ExecuteNonQueryAsync(DbCommand command, DbConnection connection)
+        {
+            command.Connection = connection;
+            return command.ExecuteNonQueryAsync();
+        }
+
+        public async Task<int> ExecuteNonQueryAsync(DbCommand command)
+        {
+            int affectedRows;
+
+            using (DbConnection connection = CreateConnection())
+            {
+                connection.Open();
+
+                affectedRows = await ExecuteNonQueryAsync(command, connection);
+
+                connection.Close();
+            }
+
+            return affectedRows;
+        }
+
+        public Task<int> ExecuteNonQueryAsync(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteNonQueryAsync(command);
+        }
+
+        #endregion
+
         #region ExecuteScalar<T>
 
         public T ExecuteScalar<T>(DbCommand command, Converter<object, T> converter, DbConnection connection)
@@ -280,6 +343,55 @@ namespace DBHelpers
 
         #endregion
 
+        #region ExecuteScalarAsync<T>
+
+        public async Task<T> ExecuteScalarAsync<T>(DbCommand command, Converter<object, T> converter, DbConnection connection)
+        {
+            command.Connection = connection;
+            var value = await command.ExecuteScalarAsync();
+            return converter(value);
+        }
+
+        public async Task<T> ExecuteScalarAsync<T>(DbCommand command, Converter<object, T> converter)
+        {
+            T o;
+
+            using (DbConnection connection = CreateConnection())
+            {
+                connection.Open();
+
+                o = await ExecuteScalarAsync<T>(command, converter, connection);
+
+                connection.Close();
+            }
+
+            return o;
+        }
+
+        public Task<T> ExecuteScalarAsync<T>(DbCommand command, DbConnection connection)
+        {
+            return ExecuteScalarAsync<T>(command, GetTypeConverter<T>(), connection);
+        }
+
+        public Task<T> ExecuteScalarAsync<T>(DbCommand command)
+        {
+            return ExecuteScalarAsync<T>(command, GetTypeConverter<T>());
+        }
+
+        public Task<T> ExecuteScalarAsync<T>(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteScalarAsync<T>(command);
+        }
+
+        public Task<T> ExecuteScalarAsync<T>(string commandText, Converter<object, T> converter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteScalarAsync<T>(command, converter);
+        }
+
+        #endregion
+
         #region ExecuteReader
 
         public DbDataReader ExecuteReader(DbCommand command, DbConnection connection)
@@ -306,6 +418,36 @@ namespace DBHelpers
         {
             var command = CreateCommand(commandText);
             return ExecuteReader(command);
+        }
+
+        #endregion
+
+        #region ExecuteReaderAsync
+
+        public Task<DbDataReader> ExecuteReaderAsync(DbCommand command, DbConnection connection)
+        {
+            command.Connection = connection;
+
+            OnExecuteCommand(command);
+
+            return command.ExecuteReaderAsync();
+        }
+
+        public Task<DbDataReader> ExecuteReaderAsync(DbCommand command)
+        {
+            DbConnection connection = CreateConnection();
+            command.Connection = connection;
+
+            OnExecuteCommand(command);
+            connection.Open();
+
+            return command.ExecuteReaderAsync(CommandBehavior.CloseConnection);
+        }
+
+        public Task<DbDataReader> ExecuteReaderAsync(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteReaderAsync(command);
         }
 
         #endregion
@@ -371,6 +513,67 @@ namespace DBHelpers
 
         #endregion
 
+        #region ExecuteDataTableAsync
+
+        public async Task<DataTable> ExecuteDataTableAsync(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
+        {
+            command.Connection = connection;
+
+            DbDataAdapter adapter = Factory.CreateDataAdapter();
+            adapter.SelectCommand = command;
+
+            OnExecuteCommand(command);
+
+            DataTable dt = new DataTable();
+
+            if (startRecord >= 0 || maxRecords >= 0)
+                await Task.Run(() => adapter.Fill(startRecord, maxRecords, dt));
+            else
+                await Task.Run(() => adapter.Fill(dt));
+
+            return dt;
+        }
+
+        public async Task<DataTable> ExecuteDataTableAsync(DbCommand command, int startRecord, int maxRecords)
+        {
+            DataTable dt;
+
+            using (DbConnection connection = CreateConnection())
+            {
+                connection.Open();
+
+                dt = await ExecuteDataTableAsync(command, startRecord, maxRecords, connection);
+
+                connection.Close();
+            }
+
+            return dt;
+        }
+
+        public Task<DataTable> ExecuteDataTableAsync(DbCommand command, DbConnection connection)
+        {
+            return ExecuteDataTableAsync(command, 0, 0, connection);
+        }
+
+        public Task<DataTable> ExecuteDataTableAsync(DbCommand command)
+        {
+            return ExecuteDataTableAsync(command, 0, 0);
+        }
+
+        public Task<DataTable> ExecuteDataTableAsync(string commandText, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDataTableAsync(command, startRecord, maxRecords);
+        }
+
+        public Task<DataTable> ExecuteDataTableAsync(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDataTableAsync(command);
+        }
+
+        #endregion
+
         #region ExecuteDataSet
 
         public DataSet ExecuteDataSet(DbCommand command, DbConnection connection)
@@ -408,6 +611,47 @@ namespace DBHelpers
         {
             var command = CreateCommand(commandText);
             return ExecuteDataSet(command);
+        }
+
+        #endregion
+
+        #region ExecuteDataSetAsync
+
+        public async Task<DataSet> ExecuteDataSetAsync(DbCommand command, DbConnection connection)
+        {
+            command.Connection = connection;
+
+            DbDataAdapter adapter = Factory.CreateDataAdapter();
+            adapter.SelectCommand = command;
+
+            OnExecuteCommand(command);
+
+            DataSet ds = new DataSet();
+            await Task.Run(() => adapter.Fill(ds));
+
+            return ds;
+        }
+
+        public async Task<DataSet> ExecuteDataSetAsync(DbCommand command)
+        {
+            DataSet ds;
+
+            using (DbConnection connection = CreateConnection())
+            {
+                connection.Open();
+
+                ds = await ExecuteDataSetAsync(command, connection);
+
+                connection.Close();
+            }
+
+            return ds;
+        }
+
+        public Task<DataSet> ExecuteDataSetAsync(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDataSetAsync(command);
         }
 
         #endregion
@@ -501,6 +745,97 @@ namespace DBHelpers
         {
             var command = CreateCommand(commandText);
             return ExecuteArray<T>(command, converter);
+        }
+
+        #endregion
+
+        #region ExecuteArrayAsync<T>
+
+        public async Task<T[]> ExecuteArrayAsync<T>(DbCommand command, Converter<object, T> converter, int startRecord, int maxRecords, DbConnection connection)
+        {
+            List<T> list = new List<T>();
+
+            using (DbDataReader reader = await ExecuteReaderAsync(command, connection))
+            {
+                await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
+                {
+                    list.Add(converter(r.GetValue(0)));
+                });
+
+                reader.Close();
+            }
+
+            return list.ToArray();
+        }
+
+        public async Task<T[]> ExecuteArrayAsync<T>(DbCommand command, Converter<object, T> converter, int startRecord, int maxRecords)
+        {
+            T[] arr;
+
+            using (DbConnection connection = CreateConnection())
+            {
+                connection.Open();
+
+                arr = await ExecuteArrayAsync<T>(command, converter, startRecord, maxRecords, connection);
+
+                connection.Close();
+            }
+
+            return arr;
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, Converter<object, T> converter, DbConnection connection)
+        {
+            return ExecuteArrayAsync<T>(command, converter, 0, 0, connection);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, Converter<object, T> converter)
+        {
+            return ExecuteArrayAsync<T>(command, converter, 0, 0);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
+        {
+            return ExecuteArrayAsync<T>(command, GetTypeConverter<T>(), startRecord, maxRecords, connection);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, int startRecord, int maxRecords)
+        {
+            return ExecuteArrayAsync<T>(command, GetTypeConverter<T>(), startRecord, maxRecords);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, DbConnection connection)
+        {
+            return ExecuteArrayAsync<T>(command, GetTypeConverter<T>(), connection);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command)
+        {
+            return ExecuteArrayAsync<T>(command, GetTypeConverter<T>());
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(string commandText, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteArrayAsync<T>(command, startRecord, maxRecords);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteArrayAsync<T>(command);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(string commandText, Converter<object, T> converter, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteArrayAsync<T>(command, converter, startRecord, maxRecords);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(string commandText, Converter<object, T> converter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteArrayAsync<T>(command, converter);
         }
 
         #endregion
@@ -599,6 +934,100 @@ namespace DBHelpers
 
         #endregion
 
+        #region ExecuteDictionaryAsync<TKey, TValue>
+
+        public async Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, int startRecord, int maxRecords, DbConnection connection)
+        {
+            Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>();
+
+            using (DbDataReader reader = await ExecuteReaderAsync(command, connection))
+            {
+                await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
+                {
+                    dict.Add(
+                        keyConverter(r.GetValue(0)),
+                        valueConverter(r.GetValue(1))
+                    );
+                });
+
+                reader.Close();
+            }
+
+            return dict;
+        }
+
+        public async Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, int startRecord, int maxRecords)
+        {
+            Dictionary<TKey, TValue> dict;
+
+            using (DbConnection connection = CreateConnection())
+            {
+                connection.Open();
+
+                dict = await ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter, startRecord, maxRecords, connection);
+
+                connection.Close();
+            }
+
+            return dict;
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, DbConnection connection)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter, 0, 0, connection);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter, 0, 0);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), startRecord, maxRecords, connection);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, int startRecord, int maxRecords)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), startRecord, maxRecords);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, DbConnection connection)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), connection);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>());
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(string commandText, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter, startRecord, maxRecords);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(string commandText, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(string commandText, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDictionaryAsync<TKey, TValue>(command, startRecord, maxRecords);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(string commandText)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteDictionaryAsync<TKey, TValue>(command);
+        }
+
+        #endregion
+
         #region ExecuteObject<T>
 
         public T ExecuteObject<T>(DbCommand command, Converter<DbDataReader, T> converter, DbConnection connection)
@@ -659,6 +1088,70 @@ namespace DBHelpers
         {
             var command = CreateCommand(commandText);
             return ExecuteObject<T>(command);
+        }
+
+        #endregion
+
+        #region ExecuteObjectAsync<T>
+
+        public async Task<T> ExecuteObjectAsync<T>(DbCommand command, Converter<DbDataReader, T> converter, DbConnection connection)
+        {
+            T o;
+
+            using (DbDataReader reader = await ExecuteReaderAsync(command, connection))
+            {
+                if (await reader.ReadAsync())
+                    o = converter(reader);
+                else
+                    o = default(T);
+
+                reader.Close();
+            }
+
+            return o;
+        }
+
+        public async Task<T> ExecuteObjectAsync<T>(DbCommand command, Converter<DbDataReader, T> converter)
+        {
+            T o;
+
+            using (DbConnection connection = CreateConnection())
+            {
+                connection.Open();
+
+                o = await ExecuteObjectAsync<T>(command, converter, connection);
+
+                connection.Close();
+            }
+
+            return o;
+        }
+
+        public Task<T> ExecuteObjectAsync<T>(DbCommand command, DbConnection connection)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteObjectAsync<T>(command, converter, connection);
+        }
+
+        public Task<T> ExecuteObjectAsync<T>(DbCommand command)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteObjectAsync<T>(command, converter);
+        }
+
+        public Task<T> ExecuteObjectAsync<T>(string commandText, Converter<DbDataReader, T> converter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteObjectAsync<T>(command, converter);
+        }
+
+        public Task<T> ExecuteObjectAsync<T>(string commandText)
+            where T : new()
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteObjectAsync<T>(command);
         }
 
         #endregion
@@ -760,6 +1253,107 @@ namespace DBHelpers
         {
             var command = CreateCommand(commandText);
             return ExecuteList<T>(command);
+        }
+
+        #endregion
+
+        #region ExecuteListAsync<T>
+
+        public async Task<List<T>> ExecuteListAsync<T>(DbCommand command, Converter<DbDataReader, T> converter, int startRecord, int maxRecords, DbConnection connection)
+        {
+            var list = new List<T>();
+
+            using (DbDataReader reader = await ExecuteReaderAsync(command, connection))
+            {
+                await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
+                {
+                    list.Add(converter(reader));
+                });
+
+                reader.Close();
+            }
+
+            return list;
+        }
+
+        public async Task<List<T>> ExecuteListAsync<T>(DbCommand command, Converter<DbDataReader, T> converter, int startRecord, int maxRecords)
+        {
+            List<T> list;
+
+            using (DbConnection connection = CreateConnection())
+            {
+                connection.Open();
+
+                list = await ExecuteListAsync<T>(command, converter, startRecord, maxRecords, connection);
+
+                connection.Close();
+            }
+
+            return list;
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command, Converter<DbDataReader, T> converter, DbConnection connection)
+        {
+            return ExecuteListAsync<T>(command, converter, 0, 0, connection);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command, Converter<DbDataReader, T> converter)
+        {
+            return ExecuteListAsync<T>(command, converter, 0, 0);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteListAsync<T>(command, converter, startRecord, maxRecords, connection);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command, int startRecord, int maxRecords)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteListAsync<T>(command, converter, startRecord, maxRecords);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command, DbConnection connection)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteListAsync<T>(command, converter, connection);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteListAsync<T>(command, converter);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(string commandText, Converter<DbDataReader, T> converter, int startRecord, int maxRecords)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteListAsync<T>(command, converter, startRecord, maxRecords);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(string commandText, Converter<DbDataReader, T> converter)
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteListAsync<T>(command, converter);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(string commandText, int startRecord, int maxRecords)
+            where T : new()
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteListAsync<T>(command, startRecord, maxRecords);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(string commandText)
+            where T : new()
+        {
+            var command = CreateCommand(commandText);
+            return ExecuteListAsync<T>(command);
         }
 
         #endregion
