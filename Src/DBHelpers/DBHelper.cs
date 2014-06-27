@@ -234,7 +234,10 @@ namespace DBHelpers
 
         public int ExecuteNonQuery(DbCommand command, DbConnection connection)
         {
+            OnExecuteCommand(command);
+
             command.Connection = connection;
+
             return command.ExecuteNonQuery();
         }
 
@@ -266,7 +269,10 @@ namespace DBHelpers
 
         public Task<int> ExecuteNonQueryAsync(DbCommand command, DbConnection connection)
         {
+            OnExecuteCommand(command);
+
             command.Connection = connection;
+
             return command.ExecuteNonQueryAsync();
         }
 
@@ -298,8 +304,12 @@ namespace DBHelpers
 
         public T ExecuteScalar<T>(DbCommand command, Converter<object, T> converter, DbConnection connection)
         {
+            OnExecuteCommand(command);
+
             command.Connection = connection;
+
             var value = command.ExecuteScalar();
+
             return converter(value);
         }
 
@@ -347,8 +357,12 @@ namespace DBHelpers
 
         public async Task<T> ExecuteScalarAsync<T>(DbCommand command, Converter<object, T> converter, DbConnection connection)
         {
+            OnExecuteCommand(command);
+
             command.Connection = connection;
+
             var value = await command.ExecuteScalarAsync();
+
             return converter(value);
         }
 
@@ -396,19 +410,19 @@ namespace DBHelpers
 
         public DbDataReader ExecuteReader(DbCommand command, DbConnection connection)
         {
-            command.Connection = connection;
-
             OnExecuteCommand(command);
+
+            command.Connection = connection;
 
             return command.ExecuteReader();
         }
 
         public DbDataReader ExecuteReader(DbCommand command)
         {
+            OnExecuteCommand(command);
+            
             DbConnection connection = CreateConnection();
             command.Connection = connection;
-
-            OnExecuteCommand(command);
             connection.Open();
 
             return command.ExecuteReader(CommandBehavior.CloseConnection);
@@ -426,19 +440,19 @@ namespace DBHelpers
 
         public Task<DbDataReader> ExecuteReaderAsync(DbCommand command, DbConnection connection)
         {
-            command.Connection = connection;
-
             OnExecuteCommand(command);
+
+            command.Connection = connection;
 
             return command.ExecuteReaderAsync();
         }
 
         public Task<DbDataReader> ExecuteReaderAsync(DbCommand command)
         {
+            OnExecuteCommand(command);
+
             DbConnection connection = CreateConnection();
             command.Connection = connection;
-
-            OnExecuteCommand(command);
             connection.Open();
 
             return command.ExecuteReaderAsync(CommandBehavior.CloseConnection);
@@ -456,12 +470,12 @@ namespace DBHelpers
 
         public DataTable ExecuteDataTable(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
         {
+            OnExecuteCommand(command);
+
             command.Connection = connection;
 
             DbDataAdapter adapter = Factory.CreateDataAdapter();
             adapter.SelectCommand = command;
-
-            OnExecuteCommand(command);
 
             DataTable dt = new DataTable();
 
@@ -517,12 +531,12 @@ namespace DBHelpers
 
         public async Task<DataTable> ExecuteDataTableAsync(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
         {
+            OnExecuteCommand(command);
+
             command.Connection = connection;
 
             DbDataAdapter adapter = Factory.CreateDataAdapter();
             adapter.SelectCommand = command;
-
-            OnExecuteCommand(command);
 
             DataTable dt = new DataTable();
 
@@ -578,12 +592,12 @@ namespace DBHelpers
 
         public DataSet ExecuteDataSet(DbCommand command, DbConnection connection)
         {
+            OnExecuteCommand(command);
+
             command.Connection = connection;
 
             DbDataAdapter adapter = Factory.CreateDataAdapter();
             adapter.SelectCommand = command;
-
-            OnExecuteCommand(command);
 
             DataSet ds = new DataSet();
             adapter.Fill(ds);
@@ -619,12 +633,12 @@ namespace DBHelpers
 
         public async Task<DataSet> ExecuteDataSetAsync(DbCommand command, DbConnection connection)
         {
+            OnExecuteCommand(command);
+
             command.Connection = connection;
 
             DbDataAdapter adapter = Factory.CreateDataAdapter();
             adapter.SelectCommand = command;
-
-            OnExecuteCommand(command);
 
             DataSet ds = new DataSet();
             await Task.Run(() => adapter.Fill(ds));
