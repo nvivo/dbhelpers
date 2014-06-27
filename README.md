@@ -11,7 +11,7 @@ While this library is not intended for replacing any big framework, it is a nice
 System Requirements
 -------------------
 
-DBHelpers is coded for .NET 4.0 and should work with any .NET Data Provider.
+DBHelpers is coded for .NET 4.5 and should work with any .NET Data Provider.
 
 Installation
 ------------
