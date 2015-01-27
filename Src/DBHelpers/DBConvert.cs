@@ -446,6 +446,43 @@ namespace DBHelpers
 
         #endregion
 
+        #region DateTimeOffset
+
+        private static DateTimeOffset ToDateTimeOffsetInternal(object value, IFormatProvider provider, DateTimeStyles styles)
+        {
+            if (value is DateTime)
+                return (DateTimeOffset) value;
+
+            return DateTimeOffset.Parse(value.ToString(), provider, styles);
+        }
+
+        private static DateTimeOffset ToDateTimeOffsetInternal(object value, IFormatProvider provider)
+        {
+            return ToDateTimeOffsetInternal(value, provider, DateTimeStyles.None);
+        }
+
+        public static DateTimeOffset? ToNullableDateTimeOffset(object value, IFormatProvider provider)
+        {
+            return ToNullable<DateTimeOffset>(value, provider, ToDateTimeOffsetInternal);
+        }
+
+        public static DateTimeOffset? ToNullableDateTimeOffset(object value)
+        {
+            return ToNullable<DateTimeOffset>(value, CultureInfo.CurrentCulture, ToDateTimeOffsetInternal);
+        }
+
+        public static DateTimeOffset ToDateTimeOffset(object value, IFormatProvider provider)
+        {
+            return To<DateTimeOffset>(value, provider, ToDateTimeOffsetInternal);
+        }
+
+        public static DateTimeOffset ToDateTimeOffset(object value)
+        {
+            return To<DateTimeOffset>(value, CultureInfo.CurrentCulture, ToDateTimeOffsetInternal);
+        }
+
+        #endregion
+
         #region String
 
         private static string ToStringInternal(object value, IFormatProvider provider)
