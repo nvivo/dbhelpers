@@ -625,6 +625,50 @@ namespace DBHelpers
 
         #endregion
 
+        #region DateTimeOffset
+
+        public static DateTimeOffset? GetNullableDateTimeOffset(this DbDataReader reader, string fieldName, IFormatProvider provider)
+        {
+            return DBConvert.ToNullableDateTimeOffset(reader[fieldName], provider);
+        }
+
+        public static DateTimeOffset? GetNullableDateTimeOffset(this DbDataReader reader, int ordinal, IFormatProvider provider)
+        {
+            return DBConvert.ToNullableDateTimeOffset(reader[ordinal], provider);
+        }
+
+        public static DateTimeOffset? GetNullableDateTimeOffset(this DbDataReader reader, string fieldName)
+        {
+            return DBConvert.ToNullableDateTimeOffset(reader[fieldName]);
+        }
+
+        public static DateTimeOffset? GetNullableDateTimeOffset(this DbDataReader reader, int ordinal)
+        {
+            return DBConvert.ToNullableDateTimeOffset(reader[ordinal]);
+        }
+
+        public static DateTimeOffset GetDateTimeOffset(this DbDataReader reader, string fieldName, IFormatProvider provider)
+        {
+            return DBConvert.ToDateTimeOffset(reader[fieldName], provider);
+        }
+
+        public static DateTimeOffset GetDateTimeOffset(this DbDataReader reader, int ordinal, IFormatProvider provider)
+        {
+            return DBConvert.ToDateTimeOffset(reader[ordinal], provider);
+        }
+
+        public static DateTimeOffset GetDateTimeOffset(this DbDataReader reader, string fieldName)
+        {
+            return DBConvert.ToDateTimeOffset(reader[fieldName]);
+        }
+
+        public static DateTimeOffset GetDateTimeOffset_(this DbDataReader reader, int ordinal)
+        {
+            return DBConvert.ToDateTimeOffset(reader[ordinal]);
+        }
+
+        #endregion
+
         #region String
 
         public static String GetString(this DbDataReader reader, string fieldName, IFormatProvider provider)
