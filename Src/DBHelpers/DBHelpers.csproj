@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataReaderExtensions.cs" />
     <Compile Include="DBConvert.cs" />
     <Compile Include="DBHelper.cs" />
     <Compile Include="DataReaderConverter.cs" />
