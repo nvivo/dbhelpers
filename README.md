@@ -1,5 +1,4 @@
 # DBHelpers
----
 
 DBHelpers is a simple but powerful library for working with plain ADO.NET.
 
@@ -9,7 +8,6 @@ If you want to optimize complex operations, or just want to run some sql without
 This library is not intended to replace any big framework, but is a nice and lightweight addition to any project of any size and it will make you rethink how much you can do using plain ADO.NET.
 
 ## System Requirements
----
 
 DBHelpers is coded for .NET 4.5 and should work with any .NET Data Provider.
 
@@ -23,7 +21,6 @@ Install-Package DBHelpers
 ```
 
 ## Quick Start
----
 
 This is not actually required, but makes it easier to work with DBHelper. If possible, add  the "providerName" to your connection string:
 
@@ -56,7 +53,6 @@ var client = db.ExecuteObject<Client>("select * from client");
 ```
 
 ## More Details
----
 
 ADO.NET is not hard to use, but as any low level component it requires a lot of plumbing. It requires you to explicitly open connections and remember to close them. It requires you to convert values and handle DBNulls. As you work with it, it becomes clear that many things could be automated. This library is basically a lot of overloads that do most of this plumbing and let you concentrate on what you need to do.
 
@@ -240,6 +236,6 @@ var page = db.ExecuteDataTable("select * from users", 20, 10);
 var arr = db.ExecuteArray("select id from top_visitors", 0, 100);
 ```
 
-### Getting Help / Contributing
+## Getting Help / Contributing
 
-If you have any question, suggestion or found a bug, please use the [issue tracker](https://github.com/nvivo/dbhelpers/issues).
+If you have any question, suggestion, feature request or found a bug, please use the [issue tracker](https://github.com/nvivo/dbhelpers/issues).
