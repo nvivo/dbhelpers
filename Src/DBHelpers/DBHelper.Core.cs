@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace DBHelpers
 {
-    public class DBHelper
+    public partial class DBHelper
     {
         #region Constructors
 
@@ -257,12 +257,6 @@ namespace DBHelpers
             return affectedRows;
         }
 
-        public int ExecuteNonQuery(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteNonQuery(command);
-        }
-
         #endregion
 
         #region ExecuteNonQueryAsync
@@ -290,12 +284,6 @@ namespace DBHelpers
             }
 
             return affectedRows;
-        }
-
-        public Task<int> ExecuteNonQueryAsync(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteNonQueryAsync(command);
         }
 
         #endregion
@@ -339,18 +327,6 @@ namespace DBHelpers
             return ExecuteScalar<T>(command, GetTypeConverter<T>());
         }
 
-        public T ExecuteScalar<T>(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteScalar<T>(command);
-        }
-
-        public T ExecuteScalar<T>(string commandText, Converter<object, T> converter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteScalar<T>(command, converter);
-        }
-
         #endregion
 
         #region ExecuteScalarAsync<T>
@@ -392,18 +368,6 @@ namespace DBHelpers
             return ExecuteScalarAsync<T>(command, GetTypeConverter<T>());
         }
 
-        public Task<T> ExecuteScalarAsync<T>(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteScalarAsync<T>(command);
-        }
-
-        public Task<T> ExecuteScalarAsync<T>(string commandText, Converter<object, T> converter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteScalarAsync<T>(command, converter);
-        }
-
         #endregion
 
         #region ExecuteReader
@@ -428,12 +392,6 @@ namespace DBHelpers
             return command.ExecuteReader(CommandBehavior.CloseConnection);
         }
 
-        public DbDataReader ExecuteReader(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteReader(command);
-        }
-
         #endregion
 
         #region ExecuteReaderAsync
@@ -456,12 +414,6 @@ namespace DBHelpers
             connection.Open();
 
             return command.ExecuteReaderAsync(CommandBehavior.CloseConnection);
-        }
-
-        public Task<DbDataReader> ExecuteReaderAsync(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteReaderAsync(command);
         }
 
         #endregion
@@ -513,18 +465,6 @@ namespace DBHelpers
             return ExecuteDataTable(command, 0, 0);
         }
 
-        public DataTable ExecuteDataTable(string commandText, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDataTable(command, startRecord, maxRecords);
-        }
-
-        public DataTable ExecuteDataTable(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDataTable(command);
-        }
-
         #endregion
 
         #region ExecuteDataTableAsync
@@ -574,18 +514,6 @@ namespace DBHelpers
             return ExecuteDataTableAsync(command, 0, 0);
         }
 
-        public Task<DataTable> ExecuteDataTableAsync(string commandText, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDataTableAsync(command, startRecord, maxRecords);
-        }
-
-        public Task<DataTable> ExecuteDataTableAsync(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDataTableAsync(command);
-        }
-
         #endregion
 
         #region ExecuteDataSet
@@ -621,12 +549,6 @@ namespace DBHelpers
             return ds;
         }
 
-        public DataSet ExecuteDataSet(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDataSet(command);
-        }
-
         #endregion
 
         #region ExecuteDataSetAsync
@@ -660,12 +582,6 @@ namespace DBHelpers
             }
 
             return ds;
-        }
-
-        public Task<DataSet> ExecuteDataSetAsync(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDataSetAsync(command);
         }
 
         #endregion
@@ -737,30 +653,6 @@ namespace DBHelpers
             return ExecuteArray<T>(command, GetTypeConverter<T>());
         }
 
-        public T[] ExecuteArray<T>(string commandText, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteArray<T>(command, startRecord, maxRecords);
-        }
-
-        public T[] ExecuteArray<T>(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteArray<T>(command);
-        }
-
-        public T[] ExecuteArray<T>(string commandText, Converter<object, T> converter, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteArray<T>(command, converter, startRecord, maxRecords);
-        }
-
-        public T[] ExecuteArray<T>(string commandText, Converter<object, T> converter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteArray<T>(command, converter);
-        }
-
         #endregion
 
         #region ExecuteArrayAsync<T>
@@ -826,30 +718,6 @@ namespace DBHelpers
         public Task<T[]> ExecuteArrayAsync<T>(DbCommand command)
         {
             return ExecuteArrayAsync<T>(command, GetTypeConverter<T>());
-        }
-
-        public Task<T[]> ExecuteArrayAsync<T>(string commandText, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteArrayAsync<T>(command, startRecord, maxRecords);
-        }
-
-        public Task<T[]> ExecuteArrayAsync<T>(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteArrayAsync<T>(command);
-        }
-
-        public Task<T[]> ExecuteArrayAsync<T>(string commandText, Converter<object, T> converter, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteArrayAsync<T>(command, converter, startRecord, maxRecords);
-        }
-
-        public Task<T[]> ExecuteArrayAsync<T>(string commandText, Converter<object, T> converter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteArrayAsync<T>(command, converter);
         }
 
         #endregion
@@ -922,30 +790,6 @@ namespace DBHelpers
             return ExecuteDictionary<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>());
         }
 
-        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(string commandText, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, startRecord, maxRecords);
-        }
-
-        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(string commandText, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter);
-        }
-
-        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(string commandText, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDictionary<TKey, TValue>(command, startRecord, maxRecords);
-        }
-
-        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDictionary<TKey, TValue>(command);
-        }
-
         #endregion
 
         #region ExecuteDictionaryAsync<TKey, TValue>
@@ -1016,30 +860,6 @@ namespace DBHelpers
             return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>());
         }
 
-        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(string commandText, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter, startRecord, maxRecords);
-        }
-
-        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(string commandText, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter);
-        }
-
-        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(string commandText, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDictionaryAsync<TKey, TValue>(command, startRecord, maxRecords);
-        }
-
-        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(string commandText)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteDictionaryAsync<TKey, TValue>(command);
-        }
-
         #endregion
 
         #region ExecuteObject<T>
@@ -1091,19 +911,6 @@ namespace DBHelpers
             return ExecuteObject<T>(command, converter);
         }
 
-        public T ExecuteObject<T>(string commandText, Converter<DbDataReader, T> converter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteObject<T>(command, converter);
-        }
-
-        public T ExecuteObject<T>(string commandText)
-            where T : new()
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteObject<T>(command);
-        }
-
         #endregion
 
         #region ExecuteObjectAsync<T>
@@ -1153,19 +960,6 @@ namespace DBHelpers
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteObjectAsync<T>(command, converter);
-        }
-
-        public Task<T> ExecuteObjectAsync<T>(string commandText, Converter<DbDataReader, T> converter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteObjectAsync<T>(command, converter);
-        }
-
-        public Task<T> ExecuteObjectAsync<T>(string commandText)
-            where T : new()
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteObjectAsync<T>(command);
         }
 
         #endregion
@@ -1243,32 +1037,6 @@ namespace DBHelpers
             return ExecuteList<T>(command, converter);
         }
 
-        public List<T> ExecuteList<T>(string commandText, Converter<DbDataReader, T> converter, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteList<T>(command, converter, startRecord, maxRecords);
-        }
-
-        public List<T> ExecuteList<T>(string commandText, Converter<DbDataReader, T> converter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteList<T>(command, converter);
-        }
-
-        public List<T> ExecuteList<T>(string commandText, int startRecord, int maxRecords)
-            where T : new()
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteList<T>(command, startRecord, maxRecords);
-        }
-
-        public List<T> ExecuteList<T>(string commandText)
-            where T : new()
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteList<T>(command);
-        }
-
         #endregion
 
         #region ExecuteListAsync<T>
@@ -1342,32 +1110,6 @@ namespace DBHelpers
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteListAsync<T>(command, converter);
-        }
-
-        public Task<List<T>> ExecuteListAsync<T>(string commandText, Converter<DbDataReader, T> converter, int startRecord, int maxRecords)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteListAsync<T>(command, converter, startRecord, maxRecords);
-        }
-
-        public Task<List<T>> ExecuteListAsync<T>(string commandText, Converter<DbDataReader, T> converter)
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteListAsync<T>(command, converter);
-        }
-
-        public Task<List<T>> ExecuteListAsync<T>(string commandText, int startRecord, int maxRecords)
-            where T : new()
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteListAsync<T>(command, startRecord, maxRecords);
-        }
-
-        public Task<List<T>> ExecuteListAsync<T>(string commandText)
-            where T : new()
-        {
-            var command = CreateCommand(commandText);
-            return ExecuteListAsync<T>(command);
         }
 
         #endregion
