@@ -70,37 +70,58 @@ namespace DBHelpers.Tests
                 "List<T> ExecuteList(DbCommand, Converter<DbDataReader, T>, Int32, Int32, DbConnection)",
                 
                 "Int32 ExecuteNonQuery(String)",
+                "Int32 ExecuteNonQuery(String, DbConnection)",
 
                 "T ExecuteScalar(String)",
                 "T ExecuteScalar(String, Converter<Object, T>)",
+                "T ExecuteScalar(String, DbConnection)",
+                "T ExecuteScalar(String, Converter<Object, T>, DbConnection)",
 
                 "DbDataReader ExecuteReader(String)",
+                "DbDataReader ExecuteReader(String, DbConnection)",
 
                 "DataTable ExecuteDataTable(String)",
                 "DataTable ExecuteDataTable(String, Int32, Int32)",
+                "DataTable ExecuteDataTable(String, DbConnection)",
+                "DataTable ExecuteDataTable(String, Int32, Int32, DbConnection)",
 
                 "DataSet ExecuteDataSet(String)",
+                "DataSet ExecuteDataSet(String, DbConnection)",
 
                 "T[] ExecuteArray(String)",
                 "T[] ExecuteArray(String, Int32, Int32)",
+                "T[] ExecuteArray(String, DbConnection)",
+                "T[] ExecuteArray(String, Int32, Int32, DbConnection)",
 
                 "T[] ExecuteArray(String, Converter<Object, T>)",
                 "T[] ExecuteArray(String, Converter<Object, T>, Int32, Int32)",
+                "T[] ExecuteArray(String, Converter<Object, T>, DbConnection)",
+                "T[] ExecuteArray(String, Converter<Object, T>, Int32, Int32, DbConnection)",
 
                 "Dictionary<TKey, TValue> ExecuteDictionary(String)",
                 "Dictionary<TKey, TValue> ExecuteDictionary(String, Int32, Int32)",
+                "Dictionary<TKey, TValue> ExecuteDictionary(String, DbConnection)",
+                "Dictionary<TKey, TValue> ExecuteDictionary(String, Int32, Int32, DbConnection)",
 
                 "Dictionary<TKey, TValue> ExecuteDictionary(String, Converter<Object, TKey>, Converter<Object, TValue>)",
                 "Dictionary<TKey, TValue> ExecuteDictionary(String, Converter<Object, TKey>, Converter<Object, TValue>, Int32, Int32)",
+                "Dictionary<TKey, TValue> ExecuteDictionary(String, Converter<Object, TKey>, Converter<Object, TValue>, DbConnection)",
+                "Dictionary<TKey, TValue> ExecuteDictionary(String, Converter<Object, TKey>, Converter<Object, TValue>, Int32, Int32, DbConnection)",
 
                 "T ExecuteObject(String)",
                 "T ExecuteObject(String, Converter<DbDataReader, T>)",
+                "T ExecuteObject(String, DbConnection)",
+                "T ExecuteObject(String, Converter<DbDataReader, T>, DbConnection)",
 
                 "List<T> ExecuteList(String)",
                 "List<T> ExecuteList(String, Int32, Int32)",
+                "List<T> ExecuteList(String, DbConnection)",
+                "List<T> ExecuteList(String, Int32, Int32, DbConnection)",
 
                 "List<T> ExecuteList(String, Converter<DbDataReader, T>)",
                 "List<T> ExecuteList(String, Converter<DbDataReader, T>, Int32, Int32)",
+                "List<T> ExecuteList(String, Converter<DbDataReader, T>, DbConnection)",
+                "List<T> ExecuteList(String, Converter<DbDataReader, T>, Int32, Int32, DbConnection)",
             };
 
             // hack to create an async version of all overloads above
