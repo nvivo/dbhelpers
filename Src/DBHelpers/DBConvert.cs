@@ -545,11 +545,6 @@ namespace DBHelpers
 
         #region To
 
-        private static bool IsNullable(Type type)
-        {
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-        }
-
         public static T To<T>(object value)
         {
             return To<T>(value, CultureInfo.CurrentCulture);
@@ -574,7 +569,10 @@ namespace DBHelpers
         public static object To(Type type, object value, IFormatProvider provider)
         {
             if (type == null)
-                throw new ArgumentNullException("targetType");
+                throw new ArgumentNullException("type");
+
+            if (value != null && value.GetType() == type)
+                return value;
 
             var isNullable = IsNullable(type);
 
@@ -692,6 +690,11 @@ namespace DBHelpers
                 return default(T);
 
             return converter(value, provider);
+        }
+
+        private static bool IsNullable(Type type)
+        {
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         #endregion
