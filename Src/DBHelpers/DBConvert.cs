@@ -645,6 +645,9 @@ namespace DBHelpers
                     if (type == typeof(byte[]))
                         return ToByteArray(value);
 
+                    if (type == typeof(DateTimeOffset))
+                        return ToDateTimeOffsetInternal(value, null);
+
                     break;
             }
 

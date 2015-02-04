@@ -61,6 +61,15 @@ namespace DBHelpers.Tests
             Assert.AreEqual(reference, dt);
         }
 
+        [TestCase("2000-12-31T23:59:59+03:00")]
+        [TestCase("2000-12-31 23:59:59+03:00")]
+        public void ConvertTo_DateTimeOffset_ReturnsDateTimeOffset(object value)
+        {
+            var reference = new DateTimeOffset(2000, 12, 31, 23, 59, 59, TimeSpan.FromHours(3));
+            var dt = DBConvert.To<DateTimeOffset>(value);
+            Assert.AreEqual(reference, dt);
+        }
+
         [TestCase("2000-12-31")]
         public void ConvertTo_DateTime_ReturnsDate(object value)
         {
