@@ -79,6 +79,15 @@ namespace DBHelpers.Tests
             Assert.AreEqual(reference, guid);
         }
 
+        [TestCase(new byte[] { 0, 1, 2 })]
+        public void ConvertTo_ByteArray_ReturnsByteArray(object value)
+        {
+            var arr = DBConvert.To<byte[]>(value);
+
+            Assert.NotNull(arr);
+            Assert.AreEqual(arr.Length, 3);
+        }
+
         [Test]
         public void Convert_DBNullToNullable_ReturnsNull()
         {

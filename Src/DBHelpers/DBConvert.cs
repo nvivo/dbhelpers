@@ -528,6 +528,21 @@ namespace DBHelpers
 
         #endregion
 
+        #region ByteArray
+
+        public static byte[] ToByteArray(object value)
+        {
+            if (value is byte[])
+                return (byte[])value;
+            
+            if (value == null || value == DBNull.Value)
+                return null;
+            
+            throw new FormatException("Cannot cast value to byte[].");
+        }
+
+        #endregion
+
         #region To
 
         private static bool IsNullable(Type type)
@@ -626,6 +641,10 @@ namespace DBHelpers
                 case TypeCode.Object:
                     if (type == typeof(Guid))
                         return ToGuidInternal(value, null);
+
+                    if (type == typeof(byte[]))
+                        return ToByteArray(value);
+
                     break;
             }
 
