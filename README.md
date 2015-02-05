@@ -128,7 +128,7 @@ var value = db.ExecuteScalar<int>("select cast(null as int)");
 // int is a struct, so value = default(int) = 0
 
 var value = db.ExecuteScalar<string>("select cast(null as varchar)"); 
-// int is a reference type, so value = default(string) = null
+// string is a reference type, so value = default(string) = null
 
 var value = db.ExecuteScalar<int?>("select cast(null as int)"); 
 // int? is a nullable, so value = default(int?) = null
