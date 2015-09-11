@@ -469,7 +469,7 @@ namespace DBHelpers
 
         #region ExecuteDataTableAsync
 
-        public async Task<DataTable> ExecuteDataTableAsync(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
+        public Task<DataTable> ExecuteDataTableAsync(DbCommand command, int startRecord, int maxRecords, DbConnection connection)
         {
             OnExecuteCommand(command);
 
@@ -481,11 +481,11 @@ namespace DBHelpers
             DataTable dt = new DataTable();
 
             if (startRecord >= 0 || maxRecords >= 0)
-                await Task.Run(() => adapter.Fill(startRecord, maxRecords, dt));
+                adapter.Fill(startRecord, maxRecords, dt);
             else
-                await Task.Run(() => adapter.Fill(dt));
+                adapter.Fill(dt);
 
-            return dt;
+            return Task.FromResult(dt);
         }
 
         public async Task<DataTable> ExecuteDataTableAsync(DbCommand command, int startRecord, int maxRecords)
@@ -553,7 +553,7 @@ namespace DBHelpers
 
         #region ExecuteDataSetAsync
 
-        public async Task<DataSet> ExecuteDataSetAsync(DbCommand command, DbConnection connection)
+        public Task<DataSet> ExecuteDataSetAsync(DbCommand command, DbConnection connection)
         {
             OnExecuteCommand(command);
 
@@ -563,9 +563,9 @@ namespace DBHelpers
             adapter.SelectCommand = command;
 
             DataSet ds = new DataSet();
-            await Task.Run(() => adapter.Fill(ds));
+            adapter.Fill(ds);
 
-            return ds;
+            return Task.FromResult(ds);
         }
 
         public async Task<DataSet> ExecuteDataSetAsync(DbCommand command)
