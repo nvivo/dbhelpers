@@ -241,6 +241,16 @@ namespace DBHelpers
             return command.ExecuteNonQuery();
         }
 
+        public int ExecuteNonQuery(DbCommand command, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
+
+            return command.ExecuteNonQuery();
+        }
+
         public int ExecuteNonQuery(DbCommand command)
         {
             int affectedRows;
@@ -266,6 +276,16 @@ namespace DBHelpers
             OnExecuteCommand(command);
 
             command.Connection = connection;
+
+            return command.ExecuteNonQueryAsync();
+        }
+
+        public Task<int> ExecuteNonQueryAsync(DbCommand command, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
 
             return command.ExecuteNonQueryAsync();
         }
@@ -301,6 +321,18 @@ namespace DBHelpers
             return converter(value);
         }
 
+        public T ExecuteScalar<T>(DbCommand command, Converter<object, T> converter, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
+
+            var value = command.ExecuteScalar();
+
+            return converter(value);
+        }
+
         public T ExecuteScalar<T>(DbCommand command, Converter<object, T> converter)
         {
             T o;
@@ -315,6 +347,11 @@ namespace DBHelpers
             }
 
             return o;
+        }
+
+        public T ExecuteScalar<T>(DbCommand command, DbTransaction transaction)
+        {
+            return ExecuteScalar<T>(command, GetTypeConverter<T>(), transaction);
         }
 
         public T ExecuteScalar<T>(DbCommand command, DbConnection connection)
@@ -342,6 +379,18 @@ namespace DBHelpers
             return converter(value);
         }
 
+        public async Task<T> ExecuteScalarAsync<T>(DbCommand command, Converter<object, T> converter, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
+
+            var value = await command.ExecuteScalarAsync();
+
+            return converter(value);
+        }
+
         public async Task<T> ExecuteScalarAsync<T>(DbCommand command, Converter<object, T> converter)
         {
             T o;
@@ -363,6 +412,11 @@ namespace DBHelpers
             return ExecuteScalarAsync<T>(command, GetTypeConverter<T>(), connection);
         }
 
+        public Task<T> ExecuteScalarAsync<T>(DbCommand command, DbTransaction transaction)
+        {
+            return ExecuteScalarAsync<T>(command, GetTypeConverter<T>(), transaction);
+        }
+
         public Task<T> ExecuteScalarAsync<T>(DbCommand command)
         {
             return ExecuteScalarAsync<T>(command, GetTypeConverter<T>());
@@ -377,6 +431,16 @@ namespace DBHelpers
             OnExecuteCommand(command);
 
             command.Connection = connection;
+
+            return command.ExecuteReader();
+        }
+
+        public DbDataReader ExecuteReader(DbCommand command, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
 
             return command.ExecuteReader();
         }
@@ -401,6 +465,16 @@ namespace DBHelpers
             OnExecuteCommand(command);
 
             command.Connection = connection;
+
+            return command.ExecuteReaderAsync();
+        }
+
+        public Task<DbDataReader> ExecuteReaderAsync(DbCommand command, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
 
             return command.ExecuteReaderAsync();
         }
@@ -439,6 +513,26 @@ namespace DBHelpers
             return dt;
         }
 
+        public DataTable ExecuteDataTable(DbCommand command, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
+
+            DbDataAdapter adapter = Factory.CreateDataAdapter();
+            adapter.SelectCommand = command;
+
+            DataTable dt = new DataTable();
+
+            if (startRecord >= 0 || maxRecords >= 0)
+                adapter.Fill(startRecord, maxRecords, dt);
+            else
+                adapter.Fill(dt);
+
+            return dt;
+        }
+
         public DataTable ExecuteDataTable(DbCommand command, int startRecord, int maxRecords)
         {
             DataTable dt;
@@ -460,6 +554,11 @@ namespace DBHelpers
             return ExecuteDataTable(command, 0, 0, connection);
         }
 
+        public DataTable ExecuteDataTable(DbCommand command, DbTransaction transaction)
+        {
+            return ExecuteDataTable(command, 0, 0, transaction);
+        }
+
         public DataTable ExecuteDataTable(DbCommand command)
         {
             return ExecuteDataTable(command, 0, 0);
@@ -474,6 +573,26 @@ namespace DBHelpers
             OnExecuteCommand(command);
 
             command.Connection = connection;
+
+            DbDataAdapter adapter = Factory.CreateDataAdapter();
+            adapter.SelectCommand = command;
+
+            DataTable dt = new DataTable();
+
+            if (startRecord >= 0 || maxRecords >= 0)
+                adapter.Fill(startRecord, maxRecords, dt);
+            else
+                adapter.Fill(dt);
+
+            return Task.FromResult(dt);
+        }
+
+        public Task<DataTable> ExecuteDataTableAsync(DbCommand command, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
 
             DbDataAdapter adapter = Factory.CreateDataAdapter();
             adapter.SelectCommand = command;
@@ -509,6 +628,11 @@ namespace DBHelpers
             return ExecuteDataTableAsync(command, 0, 0, connection);
         }
 
+        public Task<DataTable> ExecuteDataTableAsync(DbCommand command, DbTransaction transaction)
+        {
+            return ExecuteDataTableAsync(command, 0, 0, transaction);
+        }
+
         public Task<DataTable> ExecuteDataTableAsync(DbCommand command)
         {
             return ExecuteDataTableAsync(command, 0, 0);
@@ -523,6 +647,22 @@ namespace DBHelpers
             OnExecuteCommand(command);
 
             command.Connection = connection;
+
+            DbDataAdapter adapter = Factory.CreateDataAdapter();
+            adapter.SelectCommand = command;
+
+            DataSet ds = new DataSet();
+            adapter.Fill(ds);
+
+            return ds;
+        }
+
+        public DataSet ExecuteDataSet(DbCommand command, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
 
             DbDataAdapter adapter = Factory.CreateDataAdapter();
             adapter.SelectCommand = command;
@@ -568,6 +708,22 @@ namespace DBHelpers
             return Task.FromResult(ds);
         }
 
+        public Task<DataSet> ExecuteDataSetAsync(DbCommand command, DbTransaction transaction)
+        {
+            OnExecuteCommand(command);
+
+            command.Connection = transaction.Connection;
+            command.Transaction = transaction;
+
+            DbDataAdapter adapter = Factory.CreateDataAdapter();
+            adapter.SelectCommand = command;
+
+            DataSet ds = new DataSet();
+            adapter.Fill(ds);
+
+            return Task.FromResult(ds);
+        }
+
         public async Task<DataSet> ExecuteDataSetAsync(DbCommand command)
         {
             DataSet ds;
@@ -597,7 +753,26 @@ namespace DBHelpers
                 FillFromReader(reader, startRecord, maxRecords, r =>
                 {
                     list.Add(
-                    converter(r.GetValue(0))
+                        converter(r.GetValue(0))
+                    );
+                });
+
+                reader.Close();
+            }
+
+            return list.ToArray();
+        }
+
+        public T[] ExecuteArray<T>(DbCommand command, Converter<object, T> converter, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            List<T> list = new List<T>();
+
+            using (DbDataReader reader = ExecuteReader(command, transaction))
+            {
+                FillFromReader(reader, startRecord, maxRecords, r =>
+                {
+                    list.Add(
+                        converter(r.GetValue(0))
                     );
                 });
 
@@ -628,6 +803,11 @@ namespace DBHelpers
             return ExecuteArray<T>(command, converter, 0, 0, connection);
         }
 
+        public T[] ExecuteArray<T>(DbCommand command, Converter<object, T> converter, DbTransaction transaction)
+        {
+            return ExecuteArray<T>(command, converter, 0, 0, transaction);
+        }
+
         public T[] ExecuteArray<T>(DbCommand command, Converter<object, T> converter)
         {
             return ExecuteArray<T>(command, converter, 0, 0);
@@ -638,6 +818,11 @@ namespace DBHelpers
             return ExecuteArray<T>(command, GetTypeConverter<T>(), startRecord, maxRecords, connection);
         }
 
+        public T[] ExecuteArray<T>(DbCommand command, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            return ExecuteArray<T>(command, GetTypeConverter<T>(), startRecord, maxRecords, transaction);
+        }
+
         public T[] ExecuteArray<T>(DbCommand command, int startRecord, int maxRecords)
         {
             return ExecuteArray<T>(command, GetTypeConverter<T>(), startRecord, maxRecords);
@@ -646,6 +831,11 @@ namespace DBHelpers
         public T[] ExecuteArray<T>(DbCommand command, DbConnection connection)
         {
             return ExecuteArray<T>(command, GetTypeConverter<T>(), connection);
+        }
+
+        public T[] ExecuteArray<T>(DbCommand command, DbTransaction transaction)
+        {
+            return ExecuteArray<T>(command, GetTypeConverter<T>(), transaction);
         }
 
         public T[] ExecuteArray<T>(DbCommand command)
@@ -662,6 +852,23 @@ namespace DBHelpers
             List<T> list = new List<T>();
 
             using (DbDataReader reader = await ExecuteReaderAsync(command, connection))
+            {
+                await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
+                {
+                    list.Add(converter(r.GetValue(0)));
+                });
+
+                reader.Close();
+            }
+
+            return list.ToArray();
+        }
+
+        public async Task<T[]> ExecuteArrayAsync<T>(DbCommand command, Converter<object, T> converter, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            List<T> list = new List<T>();
+
+            using (DbDataReader reader = await ExecuteReaderAsync(command, transaction))
             {
                 await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
                 {
@@ -695,6 +902,11 @@ namespace DBHelpers
             return ExecuteArrayAsync<T>(command, converter, 0, 0, connection);
         }
 
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, Converter<object, T> converter, DbTransaction transaction)
+        {
+            return ExecuteArrayAsync<T>(command, converter, 0, 0, transaction);
+        }
+
         public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, Converter<object, T> converter)
         {
             return ExecuteArrayAsync<T>(command, converter, 0, 0);
@@ -705,6 +917,11 @@ namespace DBHelpers
             return ExecuteArrayAsync<T>(command, GetTypeConverter<T>(), startRecord, maxRecords, connection);
         }
 
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            return ExecuteArrayAsync<T>(command, GetTypeConverter<T>(), startRecord, maxRecords, transaction);
+        }
+
         public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, int startRecord, int maxRecords)
         {
             return ExecuteArrayAsync<T>(command, GetTypeConverter<T>(), startRecord, maxRecords);
@@ -713,6 +930,11 @@ namespace DBHelpers
         public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, DbConnection connection)
         {
             return ExecuteArrayAsync<T>(command, GetTypeConverter<T>(), connection);
+        }
+
+        public Task<T[]> ExecuteArrayAsync<T>(DbCommand command, DbTransaction transaction)
+        {
+            return ExecuteArrayAsync<T>(command, GetTypeConverter<T>(), transaction);
         }
 
         public Task<T[]> ExecuteArrayAsync<T>(DbCommand command)
@@ -729,6 +951,26 @@ namespace DBHelpers
             Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>();
 
             using (DbDataReader reader = ExecuteReader(command, connection))
+            {
+                FillFromReader(reader, startRecord, maxRecords, r =>
+                {
+                    dict.Add(
+                    keyConverter(r.GetValue(0)),
+                    valueConverter(r.GetValue(1))
+                    );
+                });
+
+                reader.Close();
+            }
+
+            return dict;
+        }
+
+        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>();
+
+            using (DbDataReader reader = ExecuteReader(command, transaction))
             {
                 FillFromReader(reader, startRecord, maxRecords, r =>
                 {
@@ -765,6 +1007,11 @@ namespace DBHelpers
             return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, 0, 0, connection);
         }
 
+        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, DbTransaction transaction)
+        {
+            return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, 0, 0, transaction);
+        }
+
         public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter)
         {
             return ExecuteDictionary<TKey, TValue>(command, keyConverter, valueConverter, 0, 0);
@@ -775,6 +1022,11 @@ namespace DBHelpers
             return ExecuteDictionary<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), startRecord, maxRecords, connection);
         }
 
+        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            return ExecuteDictionary<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), startRecord, maxRecords, transaction);
+        }
+
         public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, int startRecord, int maxRecords)
         {
             return ExecuteDictionary<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), startRecord, maxRecords);
@@ -783,6 +1035,11 @@ namespace DBHelpers
         public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, DbConnection connection)
         {
             return ExecuteDictionary<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), connection);
+        }
+
+        public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command, DbTransaction transaction)
+        {
+            return ExecuteDictionary<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), transaction);
         }
 
         public Dictionary<TKey, TValue> ExecuteDictionary<TKey, TValue>(DbCommand command)
@@ -799,6 +1056,26 @@ namespace DBHelpers
             Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>();
 
             using (DbDataReader reader = await ExecuteReaderAsync(command, connection))
+            {
+                await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
+                {
+                    dict.Add(
+                        keyConverter(r.GetValue(0)),
+                        valueConverter(r.GetValue(1))
+                    );
+                });
+
+                reader.Close();
+            }
+
+            return dict;
+        }
+
+        public async Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            Dictionary<TKey, TValue> dict = new Dictionary<TKey, TValue>();
+
+            using (DbDataReader reader = await ExecuteReaderAsync(command, transaction))
             {
                 await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
                 {
@@ -835,6 +1112,11 @@ namespace DBHelpers
             return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter, 0, 0, connection);
         }
 
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter, DbTransaction transaction)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter, 0, 0, transaction);
+        }
+
         public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, Converter<object, TKey> keyConverter, Converter<object, TValue> valueConverter)
         {
             return ExecuteDictionaryAsync<TKey, TValue>(command, keyConverter, valueConverter, 0, 0);
@@ -845,6 +1127,11 @@ namespace DBHelpers
             return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), startRecord, maxRecords, connection);
         }
 
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), startRecord, maxRecords, transaction);
+        }
+
         public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, int startRecord, int maxRecords)
         {
             return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), startRecord, maxRecords);
@@ -853,6 +1140,11 @@ namespace DBHelpers
         public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, DbConnection connection)
         {
             return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), connection);
+        }
+
+        public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command, DbTransaction transaction)
+        {
+            return ExecuteDictionaryAsync<TKey, TValue>(command, GetTypeConverter<TKey>(), GetTypeConverter<TValue>(), transaction);
         }
 
         public Task<Dictionary<TKey, TValue>> ExecuteDictionaryAsync<TKey, TValue>(DbCommand command)
@@ -869,6 +1161,23 @@ namespace DBHelpers
             T o;
 
             using (DbDataReader reader = ExecuteReader(command, connection))
+            {
+                if (reader.Read())
+                    o = converter(reader);
+                else
+                    o = default(T);
+
+                reader.Close();
+            }
+
+            return o;
+        }
+
+        public T ExecuteObject<T>(DbCommand command, Converter<DbDataReader, T> converter, DbTransaction transaction)
+        {
+            T o;
+
+            using (DbDataReader reader = ExecuteReader(command, transaction))
             {
                 if (reader.Read())
                     o = converter(reader);
@@ -904,6 +1213,13 @@ namespace DBHelpers
             return ExecuteObject<T>(command, converter, connection);
         }
 
+        public T ExecuteObject<T>(DbCommand command, DbTransaction transaction)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteObject<T>(command, converter, transaction);
+        }
+
         public T ExecuteObject<T>(DbCommand command)
             where T : new()
         {
@@ -920,6 +1236,23 @@ namespace DBHelpers
             T o;
 
             using (DbDataReader reader = await ExecuteReaderAsync(command, connection))
+            {
+                if (await reader.ReadAsync())
+                    o = converter(reader);
+                else
+                    o = default(T);
+
+                reader.Close();
+            }
+
+            return o;
+        }
+
+        public async Task<T> ExecuteObjectAsync<T>(DbCommand command, Converter<DbDataReader, T> converter, DbTransaction transaction)
+        {
+            T o;
+
+            using (DbDataReader reader = await ExecuteReaderAsync(command, transaction))
             {
                 if (await reader.ReadAsync())
                     o = converter(reader);
@@ -955,6 +1288,13 @@ namespace DBHelpers
             return ExecuteObjectAsync<T>(command, converter, connection);
         }
 
+        public Task<T> ExecuteObjectAsync<T>(DbCommand command, DbTransaction transaction)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteObjectAsync<T>(command, converter, transaction);
+        }
+
         public Task<T> ExecuteObjectAsync<T>(DbCommand command)
             where T : new()
         {
@@ -971,6 +1311,23 @@ namespace DBHelpers
             var list = new List<T>();
 
             using (DbDataReader reader = ExecuteReader(command, connection))
+            {
+                FillFromReader(reader, startRecord, maxRecords, r =>
+                {
+                    list.Add(converter(reader));
+                });
+
+                reader.Close();
+            }
+
+            return list;
+        }
+
+        public List<T> ExecuteList<T>(DbCommand command, Converter<DbDataReader, T> converter, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            var list = new List<T>();
+
+            using (DbDataReader reader = ExecuteReader(command, transaction))
             {
                 FillFromReader(reader, startRecord, maxRecords, r =>
                 {
@@ -1004,6 +1361,11 @@ namespace DBHelpers
             return ExecuteList<T>(command, converter, 0, 0, connection);
         }
 
+        public List<T> ExecuteList<T>(DbCommand command, Converter<DbDataReader, T> converter, DbTransaction transaction)
+        {
+            return ExecuteList<T>(command, converter, 0, 0, transaction);
+        }
+
         public List<T> ExecuteList<T>(DbCommand command, Converter<DbDataReader, T> converter)
         {
             return ExecuteList<T>(command, converter, 0, 0);
@@ -1014,6 +1376,13 @@ namespace DBHelpers
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteList<T>(command, converter, startRecord, maxRecords, connection);
+        }
+
+        public List<T> ExecuteList<T>(DbCommand command, int startRecord, int maxRecords, DbTransaction transaction)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteList<T>(command, converter, startRecord, maxRecords, transaction);
         }
 
         public List<T> ExecuteList<T>(DbCommand command, int startRecord, int maxRecords)
@@ -1028,6 +1397,13 @@ namespace DBHelpers
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteList<T>(command, converter, connection);
+        }
+
+        public List<T> ExecuteList<T>(DbCommand command, DbTransaction transaction)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteList<T>(command, converter, transaction);
         }
 
         public List<T> ExecuteList<T>(DbCommand command)
@@ -1046,6 +1422,23 @@ namespace DBHelpers
             var list = new List<T>();
 
             using (DbDataReader reader = await ExecuteReaderAsync(command, connection))
+            {
+                await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
+                {
+                    list.Add(converter(reader));
+                });
+
+                reader.Close();
+            }
+
+            return list;
+        }
+
+        public async Task<List<T>> ExecuteListAsync<T>(DbCommand command, Converter<DbDataReader, T> converter, int startRecord, int maxRecords, DbTransaction transaction)
+        {
+            var list = new List<T>();
+
+            using (DbDataReader reader = await ExecuteReaderAsync(command, transaction))
             {
                 await FillFromReaderAsync(reader, startRecord, maxRecords, r =>
                 {
@@ -1079,6 +1472,11 @@ namespace DBHelpers
             return ExecuteListAsync<T>(command, converter, 0, 0, connection);
         }
 
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command, Converter<DbDataReader, T> converter, DbTransaction transaction)
+        {
+            return ExecuteListAsync<T>(command, converter, 0, 0, transaction);
+        }
+
         public Task<List<T>> ExecuteListAsync<T>(DbCommand command, Converter<DbDataReader, T> converter)
         {
             return ExecuteListAsync<T>(command, converter, 0, 0);
@@ -1089,6 +1487,13 @@ namespace DBHelpers
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteListAsync<T>(command, converter, startRecord, maxRecords, connection);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command, int startRecord, int maxRecords, DbTransaction transaction)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteListAsync<T>(command, converter, startRecord, maxRecords, transaction);
         }
 
         public Task<List<T>> ExecuteListAsync<T>(DbCommand command, int startRecord, int maxRecords)
@@ -1103,6 +1508,13 @@ namespace DBHelpers
         {
             var converter = GetDataReaderConverter<T>();
             return ExecuteListAsync<T>(command, converter, connection);
+        }
+
+        public Task<List<T>> ExecuteListAsync<T>(DbCommand command, DbTransaction transaction)
+            where T : new()
+        {
+            var converter = GetDataReaderConverter<T>();
+            return ExecuteListAsync<T>(command, converter, transaction);
         }
 
         public Task<List<T>> ExecuteListAsync<T>(DbCommand command)
